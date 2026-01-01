@@ -21,6 +21,12 @@ const addBtn = document.getElementById('addBtn');
 const taskList = document.getElementById('taskList');
 const loader = document.getElementById('loader');
 
+// Stats Elements
+const totalTasksEl = document.getElementById('totalTasks');
+const avgImpactEl = document.getElementById('avgImpact');
+const completedTasksEl = document.getElementById('completedTasks');
+const globalScoreEl = document.getElementById('globalScore');
+
 // Add Task
 addBtn.addEventListener('click', async () => {
     const title = taskTitle.value.trim();
@@ -29,7 +35,6 @@ addBtn.addEventListener('click', async () => {
     const impact = parseInt(taskImpact.value);
     const effort = parseInt(taskEffort.value);
 
-    // AI Priority Formula: (Impact * 2) - Effort
     const priority = (impact * 2) - effort;
 
     try {
@@ -39,12 +44,13 @@ addBtn.addEventListener('click', async () => {
             impact,
             effort,
             priority,
+            completed: false,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         taskTitle.value = '';
     } catch (error) {
         console.error("Error adding task: ", error);
-        alert("Failed to sync with cloud. Check console.");
+        alert("Failed to sync with cloud.");
     } finally {
         loader.classList.add('hidden');
     }
@@ -55,29 +61,53 @@ db.collection('tasks')
     .orderBy('priority', 'desc')
     .onSnapshot((snapshot) => {
         taskList.innerHTML = '';
+        let totalImpact = 0;
+        let completedCount = 0;
+        let globalPrio = 0;
+        let activeCount = 0;
+
         snapshot.forEach((doc) => {
             const task = doc.data();
             renderTask(doc.id, task);
+
+            if (task.completed) {
+                completedCount++;
+            } else {
+                activeCount++;
+                totalImpact += task.impact;
+                globalPrio += task.priority;
+            }
         });
+
+        // Update Stats
+        totalTasksEl.innerText = activeCount;
+        completedTasksEl.innerText = completedCount;
+        avgImpactEl.innerText = activeCount ? (totalImpact / activeCount).toFixed(1) : '0';
+        globalScoreEl.innerText = globalPrio;
     });
 
 function renderTask(id, task) {
     const div = document.createElement('div');
-    div.className = 'glass rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all hover:border-white/20 animate-fadeIn';
+    div.className = `task-card glass rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-slideIn ${task.completed ? 'completed' : ''}`;
 
     const priorityColor = task.priority > 10 ? 'text-orange-500' : 'text-blue-400';
 
     div.innerHTML = `
-        <div class="flex-1">
-            <h3 class="text-xl font-bold mb-1">${task.title}</h3>
-            <div class="flex gap-3 text-xs font-medium text-gray-500">
-                <span>IMPACT: ${task.impact}</span>
-                <span>EFFORT: ${task.effort}</span>
+        <div class="flex items-start gap-4 flex-1">
+            <button onclick="toggleTask('${id}', ${task.completed})" class="mt-1 w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center hover:border-orange-500 transition-colors">
+                ${task.completed ? '<div class="w-3 h-3 bg-orange-500 rounded-full"></div>' : ''}
+            </button>
+            <div>
+                <h3 class="text-xl font-bold mb-1">${task.title}</h3>
+                <div class="flex gap-3 text-[10px] font-bold text-gray-500 uppercase">
+                    <span>Impact: ${task.impact}</span>
+                    <span>Effort: ${task.effort}</span>
+                </div>
             </div>
         </div>
-        <div class="flex items-center gap-6 w-full md:w-auto mt-2 md:mt-0">
+        <div class="flex items-center gap-6 w-full md:w-auto">
             <div class="text-right">
-                <span class="text-[10px] block font-bold text-gray-400 uppercase tracking-widest">Priority Score</span>
+                <span class="text-[10px] block font-bold text-gray-400 uppercase tracking-widest">Score</span>
                 <span class="text-2xl font-black ${priorityColor}">${task.priority}</span>
             </div>
             <button onclick="deleteTask('${id}')" class="p-2 hover:bg-white/10 rounded-lg transition-colors group">
@@ -89,6 +119,16 @@ function renderTask(id, task) {
     `;
     taskList.appendChild(div);
 }
+
+window.toggleTask = async (id, currentStatus) => {
+    try {
+        await db.collection('tasks').doc(id).update({
+            completed: !currentStatus
+        });
+    } catch (e) {
+        console.error(e);
+    }
+};
 
 window.deleteTask = async (id) => {
     if (!confirm('Are you sure?')) return;

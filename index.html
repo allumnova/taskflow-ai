@@ -10,6 +10,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            transition: background 0.5s ease;
         }
 
         .glass {
@@ -19,7 +20,38 @@
         }
 
         .orange-glow {
-            box-shadow: 0 0 20px rgba(255, 140, 0, 0.2);
+            box-shadow: 0 0 40px rgba(255, 140, 0, 0.1);
+        }
+
+        .task-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .task-card:hover {
+            transform: translateX(8px);
+            border-color: rgba(255, 140, 0, 0.3);
+        }
+
+        .completed {
+            opacity: 0.5;
+            filter: grayscale(1);
+            text-decoration: line-through;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slideIn {
+            animation: slideIn 0.4s ease forwards;
         }
     </style>
 </head>
@@ -47,8 +79,8 @@
                     class="text-sm font-medium text-gray-400 hover:text-white transition-colors">GitHub</a>
                 <span class="h-4 w-[1px] bg-white/10"></span>
                 <div
-                    class="text-xs font-bold text-orange-500 bg-orange-500/10 px-3 py-1.5 rounded-full border border-orange-500/20">
-                    LIVE DB</div>
+                    class="text-xs font-bold text-orange-500 bg-orange-500/10 px-3 py-1.5 rounded-full border border-orange-500/20 tracking-tighter">
+                    PREMIUM CLOUD</div>
             </div>
         </div>
     </nav>
@@ -60,6 +92,26 @@
             <p class="text-gray-400 text-lg max-w-2xl">Create tasks and let TaskFlow AI-compute the priority based on
                 impact and effort. All stored live in the cloud.</p>
         </header>
+
+        <!-- Stats Section -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <div class="glass p-6 rounded-2xl border-l-4 border-orange-500">
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Active</span>
+                <div id="totalTasks" class="text-3xl font-black mt-1">0</div>
+            </div>
+            <div id="statImpact" class="glass p-6 rounded-2xl border-l-4 border-blue-500">
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Avg Impact</span>
+                <div id="avgImpact" class="text-3xl font-black mt-1">0</div>
+            </div>
+            <div class="glass p-6 rounded-2xl border-l-4 border-green-500">
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Completed</span>
+                <div id="completedTasks" class="text-3xl font-black mt-1">0</div>
+            </div>
+            <div class="glass p-6 rounded-2xl border-l-4 border-purple-500">
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Global Prio</span>
+                <div id="globalScore" class="text-3xl font-black mt-1">0</div>
+            </div>
+        </section>
 
         <!-- New Task Form -->
         <section class="glass rounded-3xl p-8 mb-12 orange-glow">
