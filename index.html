@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow-AI | Smart Task Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .orange-glow {
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-[#050709] text-white min-h-screen">
+    <!-- Background Blobs -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div class="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] bg-orange-600/20 rounded-full blur-[100px]">
+        </div>
+        <div class="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-[100px]">
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="border-b border-white/5 bg-black/40 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-xl font-extrabold tracking-tighter">
+                    TASK<span class="text-orange-500">FLOW</span>
+                </span>
+                <span class="text-[10px] bg-white/10 px-2 py-0.5 rounded-full font-bold">AI</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="https://github.com/allumnova/taskflow-ai"
+                    class="text-sm font-medium text-gray-400 hover:text-white transition-colors">GitHub</a>
+                <span class="h-4 w-[1px] bg-white/10"></span>
+                <div
+                    class="text-xs font-bold text-orange-500 bg-orange-500/10 px-3 py-1.5 rounded-full border border-orange-500/20">
+                    LIVE DB</div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-6 py-12">
+        <header class="mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">Stay ahead of the <span
+                    class="text-orange-500">curve.</span></h1>
+            <p class="text-gray-400 text-lg max-w-2xl">Create tasks and let TaskFlow AI-compute the priority based on
+                impact and effort. All stored live in the cloud.</p>
+        </header>
+
+        <!-- New Task Form -->
+        <section class="glass rounded-3xl p-8 mb-12 orange-glow">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <label class="block text-sm font-bold text-gray-400">Task Title</label>
+                    <input type="text" id="taskTitle" placeholder="What needs to be done?"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 transition-colors">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-4">
+                        <label class="block text-sm font-bold text-gray-400">Impact (1-10)</label>
+                        <select id="taskImpact"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500">
+                            <option value="1">1 (Low)</option>
+                            <option value="5">5 (Medium)</option>
+                            <option value="10">10 (High)</option>
+                        </select>
+                    </div>
+                    <div class="space-y-4">
+                        <label class="block text-sm font-bold text-gray-400">Effort (1-10)</label>
+                        <select id="taskEffort"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500">
+                            <option value="1">1 (Easy)</option>
+                            <option value="5">5 (Medium)</option>
+                            <option value="10">10 (Hard)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button id="addBtn"
+                class="mt-8 w-full md:w-auto px-12 py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98]">
+                Add Task to Cloud
+            </button>
+        </section>
+
+        <!-- Task List -->
+        <section>
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-bold">Your Task Flow</h2>
+                <div id="loader" class="hidden text-orange-500 animate-pulse text-sm font-bold italic">Syncing with
+                    DB...</div>
+            </div>
+            <div id="taskList" class="space-y-4">
+                <!-- Task Items injected here -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="max-w-5xl mx-auto px-6 py-12 border-t border-white/5 text-center text-gray-500 text-sm">
+        Built by Allumnova Software Solutions &bull; Engineering the Future
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
